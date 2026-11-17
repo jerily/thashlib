@@ -1,0 +1,14 @@
+name: Test
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        shared: ["ON", "OFF"]
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y tcl8.6-dev libssl-dev
+      - run: cmake -S . -B build -DTCL_INCLUDE_PATH=/usr/include/tcl8.6 -DTCL_TCLSH=/usr/bin/tclsh8.6 -DBUILD_SHARED_LIBS=${{ matrix.shared }} -DCMAKE_C_FLAGS="-Wall -Wextra -Werror"
+      - run: cmake --build build
+      - run: ctest --test-dir build --output-on-failure
