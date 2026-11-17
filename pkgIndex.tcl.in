@@ -1,0 +1,1 @@
+package ifneeded thashlib @PROJECT_VERSION@ [list load [file join $dir libthashlib[info sharedlibextension]] Thashlib]
