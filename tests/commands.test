@@ -431,4 +431,14 @@ test hmac-literal-flag {A key named -hex is data} -body {
     binary encode hex [::thashlib::hmac_sha256 -hex abc]
 } -result 5082cec6aa85093203574ea9e890c28a846db76a38591ab45164418ab896988f
 
+test sha384-known {SHA-384 known answer and byte output} -body {
+    list [::thashlib::sha384 -hex abc] [string length [::thashlib::sha384 abc]]
+} -result {cb00753f45a35e8bb5a03d699ac65007272c32ab0eded1631a8b605a43ff5bed8086072ba1e7cc2358baeca134c825a7 48}
+test constant-comparison {binary equality, different lengths and empty buffers} -body {
+    set value [binary decode hex 00ff8000]
+    list [::thashlib::constant_time_equal $value $value] \
+        [::thashlib::constant_time_equal $value [binary decode hex 00ff8001]] \
+        [::thashlib::constant_time_equal $value [binary decode hex 00ff80]] \
+        [::thashlib::constant_time_equal {} {}]
+} -result {1 0 0 1}
 ::tcltest::cleanupTests
