@@ -14,7 +14,7 @@ ttrek install thashlib
 ```
 
 ```tcl
-package require thashlib 0.1.0
+package require thashlib 0.1.1
 set bytes [encoding convertto utf-8 "Hello, world!"]
 puts [::thashlib::sha256 -hex $bytes]
 ```
@@ -26,9 +26,11 @@ puts [::thashlib::sha256 -hex $bytes]
 | `::thashlib::random_bytes num_bytes` | The requested nonnegative number of cryptographically secure random bytes. |
 | `::thashlib::sha1 ?-hex? bytes` | 20-byte SHA-1 digest. |
 | `::thashlib::sha256 ?-hex? bytes` | 32-byte SHA-256 digest. |
+| `::thashlib::sha384 ?-hex? bytes` | 48-byte SHA-384 digest (since 0.1.1). |
 | `::thashlib::sha512 ?-hex? bytes` | 64-byte SHA-512 digest. |
 | `::thashlib::md5 ?-hex? bytes` | 16-byte MD5 digest. |
 | `::thashlib::hmac_sha256 ?-hex? key bytes` | 32-byte HMAC-SHA256 using the supplied key bytes. |
+| `::thashlib::constant_time_equal a b` | Byte-array equality using OpenSSL CRYPTO_memcmp for equal lengths; unequal lengths return false (since 0.1.1). |
 | `::thashlib::hex_encode bytes` | Lowercase hexadecimal string without separators. |
 | `::thashlib::hex_decode hex_encoded_string` | Decoded bytes; accepts uppercase or lowercase digits. |
 

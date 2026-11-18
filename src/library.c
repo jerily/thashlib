@@ -164,6 +164,20 @@ static int HexDecodeCmd(ClientData data, Tcl_Interp *interp, int objc, Tcl_Obj *
     return TCL_OK;
 }
 
+static int ConstantTimeEqualCmd(ClientData data, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+    (void)data;
+    if (objc != 3) {
+        Tcl_WrongNumArgs(interp, 1, objv, "bytes1 bytes2");
+        return TCL_ERROR;
+    }
+    Tcl_Size alen, blen;
+    const unsigned char *a = Tcl_GetByteArrayFromObj(objv[1], &alen);
+    const unsigned char *b = Tcl_GetByteArrayFromObj(objv[2], &blen);
+    Tcl_SetObjResult(interp, Tcl_NewBooleanObj(alen == blen &&
+        (alen == 0 || CRYPTO_memcmp(a, b, (size_t)alen) == 0)));
+    return TCL_OK;
+}
+
 int Thashlib_Init(Tcl_Interp *interp) {
 #if TCL_MAJOR_VERSION >= 9
     const char *minimum = "9.0";
@@ -174,10 +188,12 @@ int Thashlib_Init(Tcl_Interp *interp) {
     if (Tcl_CreateNamespace(interp, "::thashlib", NULL, NULL) == NULL) return TCL_ERROR;
     Tcl_CreateObjCommand(interp, "::thashlib::sha1", DigestCmd, (ClientData)"SHA1", NULL);
     Tcl_CreateObjCommand(interp, "::thashlib::sha256", DigestCmd, (ClientData)"SHA256", NULL);
+    Tcl_CreateObjCommand(interp, "::thashlib::sha384", DigestCmd, (ClientData)"SHA384", NULL);
     Tcl_CreateObjCommand(interp, "::thashlib::sha512", DigestCmd, (ClientData)"SHA512", NULL);
     Tcl_CreateObjCommand(interp, "::thashlib::md5", DigestCmd, (ClientData)"MD5", NULL);
     Tcl_CreateObjCommand(interp, "::thashlib::hmac_sha256", HmacCmd, NULL, NULL);
     Tcl_CreateObjCommand(interp, "::thashlib::random_bytes", RandomCmd, NULL, NULL);
+    Tcl_CreateObjCommand(interp, "::thashlib::constant_time_equal", ConstantTimeEqualCmd, NULL, NULL);
     Tcl_CreateObjCommand(interp, "::thashlib::hex_encode", HexEncodeCmd, NULL, NULL);
     Tcl_CreateObjCommand(interp, "::thashlib::hex_decode", HexDecodeCmd, NULL, NULL);
     return Tcl_PkgProvide(interp, "thashlib", THASHLIB_VERSION);
